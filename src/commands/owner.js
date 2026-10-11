@@ -205,6 +205,60 @@ ${ownerCmds.map(cmd => `│⪩ \`${p}${cmd}\``).join('\n')}
             });
                         break;
         }
+        case 'exec':
+        case 'terminal':
+        case '>': {
+            if (!isSuperOwner) return m.reply({ text: '❌ Khusus Super Owner!' });
+            const text = command.fullArgs;
+            if (!text) {
+                return m.reply({
+                    text: `❌ *Format Salah!*\n\nFormat: \`${p}exec <perintah>\`\nContoh: \`${p}exec ls\``
+                });
+            }
+
+            const { exec } = require('child_process');
+            exec(text, async (err, stdout, stderr) => {
+                let output = '';
+                if (err) output += `*ERROR:* ${err.message}\n`;
+                if (stderr) output += `*STDERR:* ${stderr}\n`;
+                if (stdout) output += stdout;
+                
+                await m.reply({ text: output.trim() || 'Perintah dijalankan tanpa output.' });
+            });
+            break;
+        }
+        case 'rvo': {
+            if (!isSuperOwner) return m.reply({ text: '❌ Khusus Super Owner!' }); // Batasi khusus super owner, sesuaikan jika ingin untuk co-owner/owner biasa
+            if (!m.quoted) return m.reply({ text: '❌ Reply pesan view once (sekali lihat)!' });
+
+            // Mengambil tipe pesan yang di-reply (mendukung struktur Baileys viewOnceMessage atau viewOnceMessageV2)
+            const quotedMsg = m.quoted.message;
+            const type = Object.keys(quotedMsg)[0];
+            
+            if (type !== 'imageMessage' && type !== 'videoMessage') {
+                return m.reply({ text: '❌ Ini bukan pesan view once gambar atau video!' });
+            }
+
+            try {
+                const stream = await downloadContentFromMessage(quotedMsg[type], type === 'imageMessage' ? 'image' : 'video');
+                let buffer = Buffer.from([]);
+                for await (const chunk of stream) {
+                    buffer = Buffer.concat([buffer, chunk]);
+                }
+
+                const caption = quotedMsg[type].caption || '';
+                
+                if (type === 'videoMessage') {
+                    await Hanz.sendMessage(m.chat, { video: buffer, caption: caption }, { quoted: m.msg });
+                } else if (type === 'imageMessage') {
+                    await Hanz.sendMessage(m.chat, { image: buffer, caption: caption }, { quoted: m.msg });
+                }
+            } catch (error) {
+                console.error("Gagal mendownload view once:", error);
+                await m.reply({ text: '❌ Gagal membuka pesan view once tersebut.' });
+            }
+            break;
+        }
 
         case 'info': {
     const u = process.uptime();

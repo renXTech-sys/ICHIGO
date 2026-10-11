@@ -411,6 +411,48 @@ ${funCmds.map(cmd => `│⪩ \`${p}${cmd}\``).join('\n')}
             await m.reply({ text: pick(baperList) });
             break;
         }
+        case 'hitungwr': {
+            const text = command.fullArgs;
+            if (!text) {
+                return m.reply({ 
+                    text: `❌ *Format Salah!*\n\nContoh: \`${p}hitungwr 650 58 89\`\nKeterangan: \`<total-match> <total-wr> <target-wr>\`` 
+                });
+            }
+
+            let [tm, tw, mw] = text.split(" ");
+            if (isNaN(tm)) return m.reply({ text: "❌ Masukkan total Match yang valid (angka)!" });
+            if (isNaN(tw)) return m.reply({ text: "❌ Masukkan total Winrate yang valid (angka)!" });
+            if (isNaN(mw)) return m.reply({ text: "❌ Masukkan tujuan Winrate yang valid (angka)!" });
+
+            try {
+                const TotalMatch = Number(tm);
+                const TotalWr = Number(tw);
+                const MauWr = Number(mw);
+
+                if (MauWr >= 100) {
+                    return m.reply({ text: "❌ Mana bisalahh 100% 😂" });
+                }
+
+                function rumus(TotalMatch, TotalWr, MauWr) {
+                    let tWin = TotalMatch * (TotalWr / 100);
+                    let tLose = TotalMatch - tWin;
+                    let sisaWr = 100 - MauWr;
+                    let wrResult = 100 / sisaWr;
+                    let seratusPersen = tLose * wrResult;
+                    let final = seratusPersen - TotalMatch;
+                    return Math.round(final);
+                }
+
+                const resultNum = rumus(TotalMatch, TotalWr, MauWr);
+                const x = `🎮 *HITUNG WINRATE*\n\nKamu memerlukan sekitar *${resultNum}* win tanpa lose untuk mendapatkan win rate *${MauWr}%*.`;
+                
+                await m.reply({ text: x });
+            } catch (e) {
+                console.error("[HITUNGWR]", e);
+                await m.reply({ text: "❌ Terjadi kesalahan saat menghitung winrate." });
+            }
+            break;
+        }
 
         case 'ultah': {
             const tglStr = args[0];

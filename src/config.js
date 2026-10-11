@@ -1,17 +1,24 @@
 module.exports = {
     //Nama owner
-    ownerName: 'Hanz Ofc',
+    ownerName: 'renxtech',
 
     // Nama bot
-    botName: 'WhatsApp Bot',
+    botName: 'ICHIGO MD',
 
-    footerTxt: 'Powered by ẉHanzOfc.com',
+    footerTxt: 'renx',
 
     // Prefix command (contoh: ! . /)\
     prefix: '!',
 
     // Super Owner — hanya 1 nomor, akses penuh termasuk manage co-owner
-    superOwner: '6289999999999',
+    superOwner: [
+        '6281928251916',
+        '6283124265973',
+        '6283169557427',
+        '6283157686826',
+        '6283136778501',
+        '6285935020128',
+    ],
 
     // Co-Owner — bisa lebih dari satu, akses owner biasa
     coOwner: [
@@ -20,7 +27,7 @@ module.exports = {
     ],
 
     // Mode bot: 'public' → semua orang | 'self' → hanya owner
-    botMode: 'public',
+    botMode: 'self',
 
     // Otomatis centang biru pesan yang masuk
     autoRead: true,
@@ -32,6 +39,6 @@ module.exports = {
     authFolder: './src/database/session',
 
     // Format: '120363xxxxxxxxx@newsletter'  — kosongkan jika tidak dipakai
-    channelId: '120363185570235320@newsletter',
+    channelId: '',
     
 };

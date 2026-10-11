@@ -45,7 +45,7 @@ console.log = function (...args) {
 };
 const spinnies = new Spinnies({
     color: "blue",
-    succeedColor: "green",
+    succeedColor: "magenta",
     spinner: {
         interval: 120,
         frames: [
@@ -68,7 +68,7 @@ function printBanner() {
     console.clear();
     console.log(
         chalk.cyan(
-            figlet.textSync("Hanz Ofc", {
+            figlet.textSync("ICHIGO MD", {
                 font: "Standard",
                 horizontalLayout: "default",
                 verticalLayout: "default",
@@ -78,9 +78,9 @@ function printBanner() {
         )
     );
     console.log(chalk.cyan("================================================="));
-    console.log(chalk.cyan(" • Powered By Haris Sfx"));
-    console.log(chalk.cyan(" • Thanks To Wong Hore Team & O.R.B Group"));
-    console.log(chalk.cyan(" • Info Script: https://github.com/harissfx/basebot-wa"));
+    console.log(chalk.cyan(" • Powered By renxtech"));
+    console.log(chalk.cyan(" • Thanks To Anugerah Signal Abadi"));
+    console.log(chalk.cyan(" • Info Script: https://github.com/renXTech-sys/ICHIGO"));
     console.log(chalk.cyan("================================================="));
     console.log(chalk.yellow("INFO:"), chalk.green("Jika code pairing tidak muncul tekan enter 1-2x lagi\n"));
 }
