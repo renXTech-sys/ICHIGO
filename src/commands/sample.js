@@ -462,64 +462,65 @@ const handler = async (m) => {
             await m.reply({ text: '✅ Halo anggota grup!' });
             break;
         // ══════════════════════════════════════════════════════
-        //  READ VIEW ONCE & MYLOVE
+        //  READ VIEW ONCE (RVO)
         // ══════════════════════════════════════════════════════
-
-        // Membaca pesan sekali lihat (View Once) yang di-reply
         case 'readviewonce':
         case 'rvo': {
-            if (!m.quoted) return m.reply({ text: '⚠️ Reply pesan view once yang ingin dibuka!' });
-            
-            // Mengecek apakah pesan yang di-reply adalah tipe view once
-            const quotedMsg = m.quoted.msg;
-            if (!quotedMsg || !quotedMsg.message) {
-                return m.reply({ text: '❌ Ini bukan pesan view once yang valid!' });
+            // Mengambil objek pesan utama dari parameter m
+            const rawMsg = m.msg || m;
+            const contextInfo = rawMsg.message?.extendedTextMessage?.contextInfo;
+            const quotedMsg = contextInfo?.quotedMessage;
+
+            if (!quotedMsg) {
+                return m.reply({ text: '⚠️ Balas/reply pesan view once yang ingin dibuka!' });
             }
 
-            const innerMsg = quotedMsg.message;
-            const type = Object.keys(innerMsg)[0];
+            // Unpack jika pesan dibungkus oleh viewOnceMessage / viewOnceMessageV2
+            let realMsg = quotedMsg;
+            if (realMsg.viewOnceMessageV2?.message) {
+                realMsg = realMsg.viewOnceMessageV2.message;
+            } else if (realMsg.viewOnceMessage?.message) {
+                realMsg = realMsg.viewOnceMessage.message;
+            } else if (realMsg.viewOnceMessageV2Extension?.message) {
+                realMsg = realMsg.viewOnceMessageV2Extension.message;
+            }
+
+            // Cek tipe media
+            const type = Object.keys(realMsg)[0];
 
             if (!['imageMessage', 'videoMessage'].includes(type)) {
-                return m.reply({ text: '❌ Pesan view once ini bukan berupa gambar atau video!' });
+                return m.reply({ text: '❌ Pesan yang kamu reply bukan berupa gambar atau video View Once!' });
             }
 
             try {
-                // Mengambil buffer media menggunakan method internal Baileys dari handler
-                const stream = await m.downloadQuotedMedia();
+                const { downloadContentFromMessage } = require('@whiskeysockets/baileys');
+                const mediaType = type === 'imageMessage' ? 'image' : 'video';
+                const stream = await downloadContentFromMessage(realMsg[type], mediaType);
+
                 let buffer = Buffer.from([]);
                 for await (const chunk of stream) {
                     buffer = Buffer.concat([buffer, chunk]);
                 }
 
-                const caption = innerMsg[type].caption || '';
+                const caption = realMsg[type]?.caption || '';
 
                 if (type === 'imageMessage') {
-                    await m.reply({
-                        image: buffer,
-                        caption: caption
-                    });
+                    await m.reply({ image: buffer, caption: caption });
                 } else if (type === 'videoMessage') {
-                    await m.reply({
-                        video: buffer,
-                        caption: caption,
-                        gifPlayback: false
-                    });
+                    await m.reply({ video: buffer, caption: caption });
                 }
-            } catch (error) {
-                await m.reply({ text: `❌ Gagal mendownload media: ${error.message}` });
+            } catch (err) {
+                await m.reply({ text: `❌ Gagal mengambil media View Once: ${err.message}` });
             }
             break;
         }
 
-        // Mengirim pesan dengan kode morse untuk Felicia
+        // ══════════════════════════════════════════════════════
+        //  MYLOVE
+        // ══════════════════════════════════════════════════════
         case 'mylove': {
-            // Kode morse untuk "my crush is" dan "Felicia"
-            // -- -.-- / -.-. .-.. -. ... .... / .. ...
-            // ..-. . .-.. .-.. .. -.-. .-
             const morseText = '---. ..- / -.-. .-.. -. ... .... / .. ... / ..-. . .-.. .-.. .. -.-. .-';
-            await m.reply({ 
-                text: `my crush is ${morseText} Felicia ${morseText}` 
-            });
+            await reply({ text: `my crush is ${morseText} Felicia ${morseText}` });
             break;
         }
 
