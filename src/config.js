@@ -46,5 +46,5 @@ module.exports = {
         mainBotOnly:  '⚙️ Akses ditolak: Gunakan server Bot Utama.',
         error:      '⚠️ Gagal memproses permintaan.',
         wait:       '⌛ Mengolah data, harap tunggu...',
-    },
-
+    }
+};
